@@ -2,6 +2,7 @@ import dto.User;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceTest {
 
-     private UserService userService;
+    private static final User IVAN = User.of(1, "Ivan", "123");
+    private static final User PETR = User.of(2, "Petr", "111");
+    private UserService userService;
 
      @BeforeAll
      void init(){
@@ -32,11 +35,20 @@ class UserServiceTest {
     @Test
      void UserSizeIfUserAdded(){
         System.out.println("Test 2: " + this);
-        userService.add(new User());
-        userService.add(new User());
+        userService.add(IVAN);
+        userService.add(PETR);
 
         List<User> users = userService.getAll();
         assertEquals(2, users.size());
+    }
+
+    @Test
+    void loginSuccessIfUserExists(){
+         userService.add(IVAN);
+        Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
+
+        assertTrue(maybeUser.isPresent());
+        maybeUser.ifPresent(user -> assertEquals(IVAN, user));
     }
 
     @AfterEach
